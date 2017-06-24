@@ -21,7 +21,7 @@ def getMessage():
 @server.route("/")
 def webhook():
     bot.remove_webhook()
-    bot.set_webhook(url="https://sqnposed.herokuapp.com/270200218:AAEkPc88mnM1dcc47z8xtHHu5UxVurUll1I")
+    bot.set_webhook(url='https://sqnposed.herokuapp.com/' + config.token)
     return "!", 200
 
 server.run(host="0.0.0.0", port=os.environ.get('PORT', 5000))    
