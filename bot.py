@@ -1,6 +1,7 @@
 import config
 import psycopg2
 import telebot
+import os
 from flask import Flask, request
 
 # Для работы с Telegram API используем Telebot
