@@ -9,9 +9,9 @@ bot = telebot.TeleBot(config.token)
 server = Flask(__name__)
 
 
-@bot.message_handler(commands=['reg'])
+@bot.message_handler(commands=['start'])
 def first_visit(message):
-    bot.send_message(message.chat.id, 'Приветики')
+    bot.send_message(message.chat.id, 'Hello')
     
 @server.route('/' + config.token, methods=['POST'])
 def getMessage():
@@ -21,7 +21,7 @@ def getMessage():
 @server.route("/")
 def webhook():
     bot.remove_webhook()
-    bot.set_webhook(url='https://sqnposed.herokuapp.com/')
+    bot.set_webhook(url='https://sqnposed.herokuapp.com/' + config.token)
     return "!", 200
 
 server.run(host="0.0.0.0", port=os.environ.get('PORT', 5000))    
