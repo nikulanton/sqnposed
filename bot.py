@@ -3,15 +3,29 @@ import psycopg2
 import telebot
 import os
 from flask import Flask, request
+import urlparse
 
 
 bot = telebot.TeleBot(config.token)
 server = Flask(__name__)
+urlparse.uses_netloc.append("postgres")
+url = urlparse.urlparse(os.environ["DATABASE_URL"])
+
+conn = psycopg2.connect(
+    database=url.path[1:],
+    user=url.username,
+    password=url.password,
+    host=url.hostname,
+    port=url.port
+)
 
 
 @bot.message_handler(commands=['start'])
 def first_visit(message):
-    bot.send_message(message.chat.id, 'Hello')
+    curs = conn.cursor()
+    curs.execute('SELECT chat_id FROM users;')
+    test = curs.fetchall()
+    bot.send_message(message.chat.id, str(test[0]))
     
 @server.route('/bot', methods=['POST'])
 def getMessage():
