@@ -25,7 +25,8 @@ def first_visit(message):
     curs = conn.cursor()
     curs.execute('SELECT test_col FROM test_table;')
     test = curs.fetchall()
-    bot.send_message(message.chat.id, str(test[0]))
+    bot.send_message(message.chat.id, str(test[0][0]))
+    bot.send_message(message.chat.id, 'Нихуя! А БД то работает оказывается!')
     
 @server.route('/bot', methods=['POST'])
 def getMessage():
