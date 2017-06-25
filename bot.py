@@ -3,13 +3,13 @@ import psycopg2
 import telebot
 import os
 from flask import Flask, request
-import urlparse
+import urllib
 
 
 bot = telebot.TeleBot(config.token)
 server = Flask(__name__)
-urlparse.uses_netloc.append("postgres")
-url = urlparse.urlparse(os.environ["DATABASE_URL"])
+urllib.parse.uses_netloc.append("postgres")
+url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
 
 conn = psycopg2.connect(
     database=url.path[1:],
