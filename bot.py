@@ -23,7 +23,7 @@ conn = psycopg2.connect(
 @bot.message_handler(commands=['start'])
 def first_visit(message):
     curs = conn.cursor()
-    curs.execute('SELECT chat_id FROM users;')
+    curs.execute('SELECT test_col FROM test_table;')
     test = curs.fetchall()
     bot.send_message(message.chat.id, str(test[0]))
     
