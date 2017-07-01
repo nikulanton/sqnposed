@@ -11,7 +11,7 @@ server = Flask(__name__)
 urllib.parse.uses_netloc.append("postgres")
 url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
 
-conn = psycopg2.connect(
+bdconnect = psycopg2.connect(
     database=url.path[1:],
     user=url.username,
     password=url.password,
@@ -19,14 +19,32 @@ conn = psycopg2.connect(
     port=url.port
 )
 
-
 @bot.message_handler(commands=['start'])
 def first_visit(message):
-    curs = conn.cursor()
-    curs.execute('SELECT test_col FROM test_table;')
-    test = curs.fetchall()
-    bot.send_message(message.chat.id, str(test[0][0]))
-    bot.send_message(message.chat.id, 'Нихуя! А БД то работает оказывается')
+    bot.send_message(message.chat.id, 'Привет! Начинай искать коды и получать за это баллы прямо сейчас! Введи команду /reg и мы зарегистрируем тебя.')
+
+@bot.message_handler(commands=['reg'])
+def user_register(message):
+    curs = bdconnect.cursor()
+    curs.execute('SELECT user_id FROM users;')
+    ids = curs.fetchall()
+    for myid in ids:
+        if myid[0] == str(message.chat.id):
+            id_flag = bool(True)
+            break
+        else:
+            id_flag = bool(False)
+    #         Проверяем есть ли пользователь в базе
+    if id_flag == True:
+        # Если да, то выдаем это сообщение
+        bot.send_message(message.chat.id, 'Вы уже зарегистрированы в системе!')
+        bdconnect.close()
+    else:
+        # Если нет, добавляем в базу
+        curs.execute('INSERT INTO users (user_id,user_name,user_exp,user_mode,user_tasknum,user_money,user_role) VALUES (%s,%s,NULL,NULL,NULL,NULL,1);',
+                     (message.chat.id, message.from_user.first_name))
+        bdconnect.commit()
+        bot.send_message(message.chat.id, 'Вы успешно зарегистрированы')
     
 @server.route('/bot', methods=['POST'])
 def getMessage():
