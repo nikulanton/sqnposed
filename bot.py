@@ -21,7 +21,7 @@ bdconnect = psycopg2.connect(
 
 @bot.message_handler(commands=['start'])
 def first_visit(message):
-    bot.send_message(message.chat.id, 'йоу')
+    bot.send_message(message.chat.id, 'Привет! Отправь команду /reg чтобы зарегистрироваться и начать играть!')
 
 @bot.message_handler(commands=['test'])
 def first_visit(message):
@@ -54,7 +54,11 @@ def user_register(message):
                      (message.chat.id, message.from_user.username))
         bdconnect.commit()
         bot.send_message(message.chat.id, 'Вы успешно зарегистрированы')
-    
+
+@bot.message_handler(content_types=['text'])
+def some_text_reaction(message):
+    bot.send_message(message.chat.id, 'К сожалению, мы еще не умеем отвечать на то что ты отправил')
+
 @server.route('/bot', methods=['POST'])
 def getMessage():
     bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
