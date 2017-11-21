@@ -21,7 +21,11 @@ bdconnect = psycopg2.connect(
 
 @bot.message_handler(commands=['start'])
 def first_visit(message):
-    bot.send_message(message.chat.id, 'Привет! Начинай искать коды и получать за это баллы прямо сейчас! Введи команду /reg и мы зарегистрируем тебя.')
+    bot.send_message(message.chat.id, 'Не тест')
+
+@bot.message_handler(commands=['notstart'])
+def first_visit(message):
+    bot.send_message(message.chat.id, 'Привет! Начинай искать коды и получать за это баллы прямо сейчас! Введи команду /reg и мы зарегистрируем тебя.')    
 
 @bot.message_handler(commands=['reg'])
 def user_register(message):
