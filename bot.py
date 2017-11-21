@@ -26,11 +26,10 @@ def first_visit(message):
 @bot.message_handler(commands=['test'])
 def first_visit(message):
     curs = bdconnect.cursor()
-    curs.execute('INSERT INTO users (user_id,user_name,user_exp,user_mode,user_tasknum,user_money,user_role) VALUES (%s,%s,NULL,NULL,NULL,NULL,1);',
-                     (message.chat.id, message.from_user.first_name))
+    curs.execute('INSERT INTO users (user_id) VALUES (%s);',
+                     (message.chat.id))
     bdconnect.commit()
-    curs.execute('SELECT user_id FROM users;')
-    ids = curs.fetchall()
+    bdconnect.close()
     bot.send_message(message.chat.id, 'Смотри БД')    
 
 @bot.message_handler(commands=['reg'])
