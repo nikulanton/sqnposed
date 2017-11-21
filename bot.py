@@ -38,7 +38,7 @@ def user_register(message):
     curs.execute('SELECT user_id FROM users;')
     ids = curs.fetchall()
     for myid in ids:
-        if myid[0] == str(message.chat.id):
+        if myid[0] == int(message.chat.id):
             id_flag = bool(True)
             break
         else:
