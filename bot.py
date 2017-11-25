@@ -46,7 +46,7 @@ def user_register(message):
     #         Проверяем есть ли пользователь в базе
     if id_flag == True:
         # Если да, то выдаем это сообщение
-        bot.send_message(message.chat.id, 'Вы уже зарегистрированы в системе!')
+        bot.send_message(message.chat.id, 'Вы уже зарегистрированы в системе')
         bdconnect.close()
     else:
         # Если нет, добавляем в базу
