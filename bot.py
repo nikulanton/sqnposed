@@ -141,10 +141,11 @@ def some_text_reaction(message):
                 textcursor.execute('UPDATE quest_progress SET isdoing=TRUE WHERE user_id=%s AND quest_id=%s',(int(message.chat.id),current_task_id[0][1]))
                 bot.send_message(message.chat.id,'УПС! Заданий больше не осталось, похоже вы выполнили квест!')
             else:
+                tested = current_task_id[0][0]
                 textcursor.execute('SELECT task_id,task_text,task_title FROM tasks WHERE task_quest=%s AND task_id=%s ORDER BY task_id',
-                    (int(message.text),current_task_id[0][0]+1,))
+                    (int(message.text),tested+1,))
                 textcursor.execute('UPDATE quest_progress SET current_task=%s WHERE quest_id=%s AND user_id=%s',
-                                   (current_task_id[0][0]+1,current_task_id[0][1],int(message.chat.id),))
+                                   (tested+1,current_task_id[0][1],int(message.chat.id),))
                 next_task = textcursor.fetchall()
                 bot.send_message(message.chat.id, next_task[0][1])
         else:
