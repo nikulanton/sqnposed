@@ -152,7 +152,6 @@ def some_text_reaction(message):
     else:
         bot.send_message(message.chat.id, 'Тут ничего неет :(')
 
-bdconnect.close()
 
 @server.route('/bot', methods=['POST'])
 def getMessage():
