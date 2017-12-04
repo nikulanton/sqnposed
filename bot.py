@@ -137,7 +137,7 @@ def some_text_reaction(message):
         else:
             bot.send_message(message.chat.id, 'Ответ не верный! Попробуйте другой!')
     else:
-        bot.send_message(message.chat.id, 'Тут ничего нет :(')
+        bot.send_message(message.chat.id, 'Тут ничего неет :(')
 
 @server.route('/bot', methods=['POST'])
 def getMessage():
