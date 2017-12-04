@@ -69,9 +69,9 @@ def list_of_quests(message):
     bot.send_message(message.chat.id, allquests)
 
 @bot.message_handler(commands=['addquest'])
-def list_of_quests(message):
+def addquest(message):
     add_cursor = bdconnect.cursor()
-    add_cursor.execute('UPDATE users set usermode="addquest" WHERE user_id = %s;', (int(message.chat.id),))
+    add_cursor.execute('UPDATE users set usermode=%s WHERE user_id = %s;', ('addquest',int(message.chat.id),))
     bdconnect.commit()
     bdconnect.close()
     bot.send_message(message.chat.id, 'Введите данные о квесте в формате название;количество опыта;количество денег;дата начала;дата окончания\n*Дата вводится в формате день/месяц/год')
