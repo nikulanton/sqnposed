@@ -55,6 +55,19 @@ def user_register(message):
         bdconnect.commit()
         bot.send_message(message.chat.id, 'Вы успешно зарегистрированы')
 
+@bot.message_handler(commands=['list'])
+def list_of_quests(message):
+    list_cursor = bdconnect.cursor()
+    list_cursor.execute('SELECT quest_title FROM quests;')
+    quests = list_cursor.fetchall()
+    allquests = "Список доступных квестов:\n"
+    for quest in quests:
+        allquests = allquests + str(quest[0])
+    bdconnect.commit()
+    bdconnect.close()
+    bot.send_message(message.chat.id, allquests)
+
+
 @bot.message_handler(content_types=['text'])
 def some_text_reaction(message):
     bot.send_message(message.chat.id, 'К сожалению, мы еще не умеем отвечать на то что ты отправил')
