@@ -130,8 +130,8 @@ def some_text_reaction(message):
                      (current_task_id[0][0], current_task_id[0][1],))
         istrueanswer = textcursor.fetchall()
         if istrueanswer[0][0] == message.text:
-            textcursor.execute('UPDATE task_progress SET isdoing=TRUE WHERE user_id=% AND task_id=% AND quest_id=%',
-                         (int(message.chat.id), current_task_id[0][0], current_task_id[0][1],))
+            textcursor.execute('UPDATE task_progress SET isdoing=TRUE WHERE task_id=% AND user_id=% AND quest_id=%',
+                         (int(current_task_id[0][0]),int(message.chat.id), int(current_task_id[0][1]),))
             bdconnect.commit()
             bot.send_message(message.chat.id, 'Задание успешно выполнено, поздравляем!')
         else:
