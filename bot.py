@@ -49,9 +49,9 @@ def user_register(message):
 
 @bot.message_handler(commands=['list'])
 def list_of_quests(message):
-    list_cursor = bdconnect.cursor()
-    list_cursor.execute('SELECT quest_title FROM quests;')
-    quests = list_cursor.fetchall()
+    curs = bdconnect.cursor()
+    curs.execute('SELECT quest_title FROM quests;')
+    quests = curs.fetchall()
     allquests = "Список доступных квестов:\n"
     for quest in quests:
         allquests = allquests + str(quest[0]) + '\n'
@@ -60,16 +60,16 @@ def list_of_quests(message):
 
 @bot.message_handler(commands=['addquest'])
 def addquest(message):
-    add_cursor = bdconnect.cursor()
+    curs = bdconnect.cursor()
     status = 'addquest'
-    add_cursor.execute('UPDATE users set usermode=%s WHERE user_id = %s;', (status,int(message.chat.id),))
+    curs.execute('UPDATE users set usermode=%s WHERE user_id = %s;', (status,int(message.chat.id),))
     bdconnect.commit()
     bot.send_message(message.chat.id, 'Введите данные о квесте в формате название;количество опыта;количество денег;дата начала;дата окончания\n*Дата вводится в формате месяц/день/год')
 
 @bot.message_handler(commands=['esc'])
 def escape(message):
-    esc_cursor = bdconnect.cursor()
-    esc_cursor.execute('UPDATE users set usermode=NULL WHERE user_id = %s;', (int(message.chat.id),))
+    curs = bdconnect.cursor()
+    curs.execute('UPDATE users set usermode=NULL WHERE user_id = %s;', (int(message.chat.id),))
     bdconnect.commit()
     bot.send_message(message.chat.id, 'Предыдущая команда прервана. Выберите другую')
 
@@ -134,11 +134,25 @@ def some_text_reaction(message):
             textcursor.execute('UPDATE task_progress SET isdoing=TRUE WHERE task_id=%s AND user_id=%s AND quest_id=%s',
                          (int(current_task_id[0][0]),int(message.chat.id), int(current_task_id[0][1]),))
             bdconnect.commit()
-            bot.send_message(message.chat.id, 'Задание успешно выполнено, поздравляем!')
+            bot.send_message(message.chat.id, 'Задание успешно выполнено, поздравляем! Отправляем следующее...')
+            textcursor.execute('SELECT max(task_id) FROM tasks WHERE task_quest=%s ORDER BY task_id', (current_task_id[0][1],))
+            max_taskid = textcursor.fetchall()
+            if max_taskid[0][0]==current_task_id[0][0]:
+                textcursor.execute('UPDATE quest_progress SET isdoing=TRUE WHERE user_id=%s AND quest_id=%s',(int(message.chat.id),current_task_id[0][1]))
+                bot.send_message(message.chat.id,'УПС! Заданий больше не осталось, похоже вы выполнили квест!')
+            else:
+                textcursor.execute('SELECT task_id,task_text,task_title FROM tasks WHERE task_quest=%s AND task_id=%s ORDER BY task_id',
+                    (int(message.text),current_task_id[0][0]+1,))
+                textcursor.execute('UPDATE quest_progress SET current_task=%s WHERE quest_id=%s AND user_id=%s',
+                                   (current_task_id[0][0]+1,current_task_id[0][1],int(message.chat.id),))
+                next_task = textcursor.fetchall()
+                bot.send_message(message.chat.id, next_task[0][1])
         else:
             bot.send_message(message.chat.id, 'Ответ не верный! Попробуйте другой!')
     else:
         bot.send_message(message.chat.id, 'Тут ничего неет :(')
+
+bdconnect.close()
 
 @server.route('/bot', methods=['POST'])
 def getMessage():
