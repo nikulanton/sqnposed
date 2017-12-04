@@ -29,7 +29,6 @@ def first_visit(message):
     curs.execute('INSERT INTO users (user_id) VALUES (%s);',
                      (message.chat.id))
     bdconnect.commit()
-    bdconnect.close()
     bot.send_message(message.chat.id, 'Смотри БД')    
 
 @bot.message_handler(commands=['reg'])
@@ -54,7 +53,6 @@ def user_register(message):
                      (message.chat.id, message.from_user.username, userrole))
         bdconnect.commit()
         bot.send_message(message.chat.id, 'Вы успешно зарегистрированы')
-    bdconnect.close()
 
 @bot.message_handler(commands=['list'])
 def list_of_quests(message):
@@ -65,7 +63,6 @@ def list_of_quests(message):
     for quest in quests:
         allquests = allquests + str(quest[0]) + '\n'
     bdconnect.commit()
-    bdconnect.close()
     bot.send_message(message.chat.id, allquests)
 
 @bot.message_handler(commands=['addquest'])
@@ -74,7 +71,6 @@ def addquest(message):
     status = 'addquest'
     add_cursor.execute('UPDATE users set usermode=%s WHERE user_id = %s;', (status,int(message.chat.id),))
     bdconnect.commit()
-    bdconnect.close()
     bot.send_message(message.chat.id, 'Введите данные о квесте в формате название;количество опыта;количество денег;дата начала;дата окончания\n*Дата вводится в формате день/месяц/год')
 
 
@@ -87,7 +83,7 @@ def some_text_reaction(message):
         bot.send_message(message.chat.id, 'Вы в режиме добавления квеста')
     else:
         bot.send_message(message.chat.id, 'Тут ничего нет :(')
-    bdconnect.close()
+
 @server.route('/bot', methods=['POST'])
 def getMessage():
     bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
