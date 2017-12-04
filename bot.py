@@ -71,16 +71,24 @@ def addquest(message):
     status = 'addquest'
     add_cursor.execute('UPDATE users set usermode=%s WHERE user_id = %s;', (status,int(message.chat.id),))
     bdconnect.commit()
-    bot.send_message(message.chat.id, 'Введите данные о квесте в формате название;количество опыта;количество денег;дата начала;дата окончания\n*Дата вводится в формате день/месяц/год')
+    bot.send_message(message.chat.id, 'Введите данные о квесте в формате название;количество опыта;количество денег;дата начала;дата окончания\n*Дата вводится в формате месяц/день/год')
 
+@bot.message_handler(commands=['esc'])
+def escape(message):
+    esc_cursor = bdconnect.cursor()
+    esc_cursor.execute('UPDATE users set usermode=NULL WHERE user_id = %s;', (int(message.chat.id),))
+    bdconnect.commit()
+    bot.send_message(message.chat.id, 'Предыдущая команда прервана. Выберите другую')
 
 @bot.message_handler(content_types=['text'])
 def some_text_reaction(message):
-    get_usermode = bdconnect.cursor()
-    get_usermode.execute('SELECT usermode FROM users WHERE user_id=%s', (int(message.chat.id),))
-    usermode = get_usermode.fetchall()
+    textcursor = bdconnect.cursor()
+    textcursor.execute('SELECT usermode FROM users WHERE user_id=%s', (int(message.chat.id),))
+    usermode = textcursor.fetchall()
     if usermode[0][0] == 'addquest':
-        bot.send_message(message.chat.id, 'Вы в режиме добавления квеста')
+        quest_parts = (message.text).split(';')
+        textcursor.execute('INSERT INTO quests (quest_title,quest_exp,quest_money,quest_start,quest_end,quest_available) VALUES (%s,%s,%s,%s,%s,TRUE)', (quest_parts[0], int(quest_parts[1]), int(quest_parts[2]), quest_parts[3], quest_parts[4], ))
+        bot.send_message(message.chat.id, 'Квест добавлен если вы нигде не ошиблись')
     else:
         bot.send_message(message.chat.id, 'Тут ничего нет :(')
 
