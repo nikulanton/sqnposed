@@ -73,6 +73,13 @@ def escape(message):
     bdconnect.commit()
     bot.send_message(message.chat.id, 'Предыдущая команда прервана. Выберите другую')
 
+@bot.message_handler(commands=['answer'])
+def answer(message):
+    curs = bdconnect.cursor()
+    status = 'tellinganswer'
+    curs.execute('UPDATE users set usermode=%s WHERE user_id = %s;', (status, int(message.chat.id),))
+    bot.send_message(message.chat.id, 'Введите найденный  код')
+
 @bot.message_handler(commands=['takequest'])
 def takequest(message):
     curs = bdconnect.cursor()
@@ -116,6 +123,19 @@ def some_text_reaction(message):
             first_task = textcursor.fetchall()
             bot.send_message(message.chat.id, 'Вы успешно взяли квест. Отправляем первое задание...')
             bot.send_message(message.chat.id, first_task[0][1])
+    elif usermode[0][0] == 'tellinganswer':
+        textcursor.execute('SELECT current_task,quest_id FROM quest_progress WHERE user_id=%s', (int(message.chat.id),))
+        current_task_id = textcursor.fetchall()
+        textcursor.execute('SELECT task_answer FROM tasks WHERE task_id=%s AND task_quest=%s',
+                     (current_task_id[0][0], current_task_id[0][1],))
+        istrueanswer = textcursor.fetchall()
+        if istrueanswer[0][0] == int(message.text):
+            textcursor.execute('UPDATE task_progress SET isdoing=TRUE WHERE user_id=% AND task_id=% AND quest_id=%',
+                         (int(message.chat.id), current_task_id[0][0], current_task_id[0][1],))
+            bdconnect.commit()
+            bot.send_message(message.chat.id, 'Задание успешно выполнено, поздравляем!')
+        else:
+            bot.send_message(message.chat.id, 'Ответ не верный! Попробуйте другой!')
     else:
         bot.send_message(message.chat.id, 'Тут ничего нет :(')
 
