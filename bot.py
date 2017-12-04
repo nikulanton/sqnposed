@@ -49,7 +49,7 @@ def user_register(message):
         bot.send_message(message.chat.id, 'Вы уже зарегистрированы в системе!')
     else:
         # Если нет, добавляем в базу
-        curs.execute('INSERT INTO users (user_id,nickname,team,role,usermode) VALUES (%s,%s,NULL,"user",NULL);',
+        curs.execute('INSERT INTO users (user_id,nickname,team,role,usermode) VALUES (%s,%s,NULL,user,NULL);',
                      (message.chat.id, message.from_user.username))
         bdconnect.commit()
         bot.send_message(message.chat.id, 'Вы успешно зарегистрированы')
