@@ -71,7 +71,8 @@ def list_of_quests(message):
 @bot.message_handler(commands=['addquest'])
 def addquest(message):
     add_cursor = bdconnect.cursor()
-    add_cursor.execute('UPDATE users set usermode=%s WHERE user_id = %s;', ('addquest',int(message.chat.id),))
+    status = 'addquest'
+    add_cursor.execute('UPDATE users set usermode=%s WHERE user_id = %s;', (status,int(message.chat.id),))
     bdconnect.commit()
     bdconnect.close()
     bot.send_message(message.chat.id, 'Введите данные о квесте в формате название;количество опыта;количество денег;дата начала;дата окончания\n*Дата вводится в формате день/месяц/год')
@@ -80,13 +81,13 @@ def addquest(message):
 @bot.message_handler(content_types=['text'])
 def some_text_reaction(message):
     get_usermode = bdconnect.cursor()
-    get_usermode.execute('SELECT  usermode FROM users WHERE user_id=%s', (int(message.chat.id),))
+    get_usermode.execute('SELECT usermode FROM users WHERE user_id=%s', (int(message.chat.id),))
     usermode = get_usermode.fetchall()
     if usermode[0][0] == 'addquest':
         bot.send_message(message.chat.id, 'Вы в режиме добавления квеста')
     else:
         bot.send_message(message.chat.id, 'Тут ничего нет :(')
-
+    bdconnect.close()
 @server.route('/bot', methods=['POST'])
 def getMessage():
     bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
