@@ -106,10 +106,13 @@ def some_text_reaction(message):
         if not quests:
             bot.send_message(message.chat.id, 'Такого квеста не существует! Введите номер квеста из спика команды /list')
         else:
-            textcursor.execute('INSERT INTO quest_progress (quest_id,user_id,isdoing) VALUES (%s,%s,FALSE)', (int(message.text),int(message.chat.id),))
+            textcursor.execute('INSERT INTO quest_progress (quest_id,user_id,isdoing,current_task) VALUES (%s,%s,FALSE,1)',
+                               (int(message.text),int(message.chat.id),))
+            textcursor.execute('INSERT INTO task_progress (task_id,user_id,isdoing,quest_id) VALUES (1,%s,FALSE,%s)',
+                                (int(message.chat.id), int(message.text), ))
             textcursor.execute('UPDATE users set usermode=NULL WHERE user_id = %s;', (int(message.chat.id),))
             bdconnect.commit()
-            textcursor.execute('SELECT task_id,task_text,task_title FROM tasks WHERE task_quest=1 ORDER BY task_id')
+            textcursor.execute('SELECT task_id,task_text,task_title FROM tasks WHERE task_quest=%s ORDER BY task_id', (int(message.text),))
             first_task = textcursor.fetchall()
             bot.send_message(message.chat.id, 'Вы успешно взяли квест. Отправляем первое задание...')
             bot.send_message(message.chat.id, first_task[0][1])
