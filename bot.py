@@ -47,7 +47,6 @@ def user_register(message):
     if id_flag == True:
         # Если да, то выдаем это сообщение
         bot.send_message(message.chat.id, 'Вы уже зарегистрированы в системе!')
-        bdconnect.close()
     else:
         # Если нет, добавляем в базу
         curs.execute('INSERT INTO users (user_id,nickname,team) VALUES (%s,%s,NULL);',
@@ -64,7 +63,6 @@ def list_of_quests(message):
     for quest in quests:
         allquests = allquests + str(quest[0])
     bdconnect.commit()
-    bdconnect.close()
     bot.send_message(message.chat.id, allquests)
 
 
