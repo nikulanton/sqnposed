@@ -49,7 +49,7 @@ def user_register(message):
         bot.send_message(message.chat.id, 'Вы уже зарегистрированы в системе!')
     else:
         # Если нет, добавляем в базу
-        curs.execute('INSERT INTO users (user_id,nickname,team) VALUES (%s,%s,NULL);',
+        curs.execute('INSERT INTO users (user_id,nickname,team,role,usermode) VALUES (%s,%s,NULL,"user",NULL);',
                      (message.chat.id, message.from_user.username))
         bdconnect.commit()
         bot.send_message(message.chat.id, 'Вы успешно зарегистрированы')
@@ -61,7 +61,18 @@ def list_of_quests(message):
     quests = list_cursor.fetchall()
     allquests = "Список доступных квестов:\n"
     for quest in quests:
-        allquests = allquests + str(quest[0])
+        allquests = allquests + str(quest[0]) + '\n'
+    bdconnect.commit()
+    bot.send_message(message.chat.id, allquests)
+
+@bot.message_handler(commands=['addquest'])
+def list_of_quests(message):
+    list_cursor = bdconnect.cursor()
+    list_cursor.execute('SELECT quest_title FROM quests;')
+    quests = list_cursor.fetchall()
+    allquests = "Список доступных квестов:\n"
+    for quest in quests:
+        allquests = allquests + str(quest[0]) + '\n'
     bdconnect.commit()
     bot.send_message(message.chat.id, allquests)
 
