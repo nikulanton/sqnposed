@@ -80,6 +80,23 @@ def escape(message):
     bdconnect.commit()
     bot.send_message(message.chat.id, 'Предыдущая команда прервана. Выберите другую')
 
+@bot.message_handler(commands=['takequest'])
+def takequest(message):
+    curs = bdconnect.cursor()
+    curs.execute('SELECT quest_id FROM quest_progress WHERE user_id=%s AND isdoing=FALSE', (str(message.chat.id),))
+    validation = curs.fetchall()
+    if not validation:
+        flag = True
+    else:
+        flag=False
+    if flag==True:
+        status = 'takequest'
+        curs.execute('UPDATE users set usermode=%s WHERE user_id = %s;', (status, int(message.chat.id),))
+        bdconnect.commit()
+        bot.send_message(message.chat.id, 'Выберите ID квеста который вы хотите взять')
+    else:
+        bot.send_message(message.chat.id, 'Сначала выполните предыдущий квест!')
+
 @bot.message_handler(content_types=['text'])
 def some_text_reaction(message):
     textcursor = bdconnect.cursor()
@@ -88,7 +105,17 @@ def some_text_reaction(message):
     if usermode[0][0] == 'addquest':
         quest_parts = (message.text).split(';')
         textcursor.execute('INSERT INTO quests (quest_title,quest_exp,quest_money,quest_start,quest_end,quest_available) VALUES (%s,%s,%s,%s,%s,TRUE)', (quest_parts[0], int(quest_parts[1]), int(quest_parts[2]), quest_parts[3], quest_parts[4], ))
+        bdconnect.commit()
         bot.send_message(message.chat.id, 'Квест добавлен если вы нигде не ошиблись')
+    elif usermode[0][0] == 'takequest':
+        textcursor.execute('SELECT quest_id FROM quests')
+        quests = textcursor.fetchall()
+        if not quests:
+            bot.send_message(message.chat.id, 'Такого квеста не существует!')
+        else:
+            textcursor.execute('INSERT INTO quest_progress (quest_id,user_id,isdoing) VALUES (%s,%s,FALSE)', (int(message.text),int(message.chat.id),))
+            bdconnect.commit()
+            bot.send_message(message.chat.id, 'Вы успешно взяли квест')
     else:
         bot.send_message(message.chat.id, 'Тут ничего нет :(')
 
