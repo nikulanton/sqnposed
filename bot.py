@@ -101,7 +101,7 @@ def some_text_reaction(message):
         bdconnect.commit()
         bot.send_message(message.chat.id, 'Квест добавлен если вы нигде не ошиблись')
     elif usermode[0][0] == 'takequest':
-        textcursor.execute('SELECT quest_id FROM quests')
+        textcursor.execute('SELECT quest_id FROM quests WHERE quest_id=%s', (int(message.text),))
         quests = textcursor.fetchall()
         if not quests:
             bot.send_message(message.chat.id, 'Такого квеста не существует!')
