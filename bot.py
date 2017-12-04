@@ -23,13 +23,6 @@ bdconnect = psycopg2.connect(
 def first_visit(message):
     bot.send_message(message.chat.id, 'Привет! Отправь команду /reg чтобы зарегистрироваться и начать играть')
 
-@bot.message_handler(commands=['test'])
-def first_visit(message):
-    curs = bdconnect.cursor()
-    curs.execute('INSERT INTO users (user_id) VALUES (%s);',
-                     (message.chat.id))
-    bdconnect.commit()
-    bot.send_message(message.chat.id, 'Смотри БД')    
 
 @bot.message_handler(commands=['reg'])
 def user_register(message):
