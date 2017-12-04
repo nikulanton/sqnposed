@@ -135,7 +135,7 @@ def some_text_reaction(message):
                          (int(current_task_id[0][0]),int(message.chat.id), int(current_task_id[0][1]),))
             bdconnect.commit()
             bot.send_message(message.chat.id, 'Задание успешно выполнено, поздравляем! Отправляем следующее...')
-            textcursor.execute('SELECT max(task_id) FROM tasks WHERE task_quest=%s ORDER BY task_id', (current_task_id[0][1],))
+            textcursor.execute('SELECT max(task_id) FROM tasks WHERE task_quest=%s', (current_task_id[0][1],))
             max_taskid = textcursor.fetchall()
             if max_taskid[0][0]==current_task_id[0][0]:
                 textcursor.execute('UPDATE quest_progress SET isdoing=TRUE WHERE user_id=%s AND quest_id=%s',(int(message.chat.id),current_task_id[0][1]))
