@@ -129,7 +129,7 @@ def some_text_reaction(message):
         textcursor.execute('SELECT task_answer FROM tasks WHERE task_id=%s AND task_quest=%s',
                      (current_task_id[0][0], current_task_id[0][1],))
         istrueanswer = textcursor.fetchall()
-        if istrueanswer[0] == message.text:
+        if istrueanswer[0][0] == message.text:
             bot.send_message(message.chat.id,current_task_id[0][0]+current_task_id[0][1])
             textcursor.execute('UPDATE task_progress SET isdoing=TRUE WHERE task_id=%s AND user_id=%s AND quest_id=%s',
                          (int(current_task_id[0][0]),int(message.chat.id), int(current_task_id[0][1]),))
@@ -139,21 +139,16 @@ def some_text_reaction(message):
             max_taskid = textcursor.fetchall()
             bot.send_message(message.chat.id, max_taskid[0])
             if max_taskid[0]==current_task_id[0][0]:
-                textcursor.execute('UPDATE quest_progress SET isdoing=TRUE WHERE user_id=%s AND quest_id=%s',(int(message.chat.id),current_task_id[0][1]))
+                textcursor.execute('UPDATE quest_progress SET isdoing=TRUE WHERE user_id=%s AND quest_id=%s',(int(message.chat.id),current_task_id[0][1],))
                 bot.send_message(message.chat.id,'УПС! Заданий больше не осталось, похоже вы выполнили квест!')
             else:
-                tested = current_task_id[0][0]
-                tested1 = tested+1
                 textcursor.execute('UPDATE quest_progress SET current_task=%s WHERE quest_id=%s AND user_id=%s',
-                                   (int(tested1),current_task_id[0][1],int(message.chat.id),))
-                # textcursor.execute('INSERT INTO task_progress (task_id,user_id,isdoing,quest_id) VALUES (test)')
+                                   (current_task_id[0][0]+1,current_task_id[0][1],int(message.chat.id),))
                 textcursor.execute('SELECT task_id,task_text,task_title FROM tasks WHERE task_quest=%s AND task_id=%s ORDER BY task_id',
-                    (current_task_id[0][1],int(tested1),))
+                    (current_task_id[0][1],current_task_id[0][0]+1,))
                 bdconnect.commit()
                 next_task = textcursor.fetchall()
                 bot.send_message(message.chat.id, next_task[0][1])
-        elif not istrueanswer:
-            bot.send_message(message.chat.id, 'Задания закончились(')
         else:
             bot.send_message(message.chat.id, 'Ответ не верный! Попробуйте другой!')
     else:
