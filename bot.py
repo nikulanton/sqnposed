@@ -147,7 +147,7 @@ def some_text_reaction(message):
                 else:
                     textcursor.execute('SELECT max(task_id) FROM tasks WHERE task_quest=%s', (current_task_id[0][1],))
                     isfinish = textcursor.fetchall()
-                    if isfinish == current_task_id[0][0]:
+                    if isfinish <= current_task_id[0][0]:
                         bot.send_message(message.chat.id,'УПС! Заданий больше не осталось, похоже вы выполнили квест!')
                     else:
                         textcursor.execute('UPDATE quest_progress SET current_task=%s WHERE quest_id=%s AND user_id=%s',
