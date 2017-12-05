@@ -72,7 +72,7 @@ def addtask(message):
     status = 'addtask'
     curs.execute('UPDATE users set usermode=%s WHERE user_id = %s;', (status,int(message.chat.id),))
     bdconnect.commit()
-    bot.send_message(message.chat.id, 'Введите данные о задании в формате порядковый номер задания в квесте;номер квеста;заголовок задания;id локации;количество выполнений;правильный ответ')
+    bot.send_message(message.chat.id, 'Введите данные о задании в формате порядковый номер задания в квесте;номер квеста;заголовок задания;текст задания;id локации;количество выполнений;правильный ответ')
 
 @bot.message_handler(commands=['esc'])
 def escape(message):
@@ -125,7 +125,7 @@ def some_text_reaction(message):
     elif usermode[0][0] == "addtask":
         task_parts = (message.text).split(';')
         textcursor.execute(
-            'INSERT INTO quests (quest_title,quest_exp,quest_money,quest_start,quest_end,quest_available) VALUES (%s,%s,%s,%s,%s,%s,%s)',
+            'INSERT INTO quests (task_id,task_quest,task_title,task_text,task_location,task_numofexe,task_answer) VALUES (%s,%s,%s,%s,%s,%s,%s)',
             (int(task_parts[0]),int(task_parts[1]),task_parts[2],task_parts[3],int(task_parts[4]),int(task_parts[5]),task_parts[6],))
         bdconnect.commit()
         bot.send_message(message.chat.id, 'Задание добавлено если вы нигде не ошиблись')
