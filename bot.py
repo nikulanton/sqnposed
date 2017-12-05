@@ -80,6 +80,13 @@ def answer(message):
     curs.execute('UPDATE users set usermode=%s WHERE user_id = %s;', (status, int(message.chat.id),))
     bot.send_message(message.chat.id, 'Введите найденный  код')
 
+@bot.message_handler(commands=['stats'])
+def answer(message):
+    curs = bdconnect.cursor()
+    curs.execute('WITH vse AS (SELECT * FROM quest_progress JOIN quests ON (quest_progress.quest_id=quests.quest_id)), nado AS (SELECT quest_exp FROM vse WHERE user_id=%s) SELECT sum(quest_exp) FROM nado')
+    exp = curs.fetchall()
+    bot.send_message(message.chat.id, exp[0])
+
 @bot.message_handler(commands=['takequest'])
 def takequest(message):
     curs = bdconnect.cursor()
@@ -131,7 +138,7 @@ def some_text_reaction(message):
                 bot.send_message(message.chat.id, 'Вы успешно взяли квест. Отправляем первое задание...')
                 bot.send_message(message.chat.id, first_task[0][1])
             else:
-                bot.send_message(message.chat.id, 'test')
+                bot.send_message(message.chat.id, 'Вы уже выполняли этот квест, выберите другой!')
     elif usermode[0][0] == 'tellinganswer':
         textcursor.execute('SELECT current_task,quest_id FROM quest_progress WHERE user_id=%s AND isdoing=FALSE', (int(message.chat.id),))
         current_task_id = textcursor.fetchall()
