@@ -140,8 +140,8 @@ def some_text_reaction(message):
                 bot.send_message(message.chat.id, 'Задание успешно выполнено, поздравляем! Отправляем следующее...')
                 textcursor.execute('SELECT max(task_id) FROM tasks WHERE task_quest=%s', (current_task_id[0][1],))
                 max_taskid = textcursor.fetchall()
-                bot.send_message(message.chat.id, 'Максимум заданий в квесте: %s', (max_taskid[0],))
-                if int(current_task_id[0][0]) >= int(max_taskid[0]):
+                bot.send_message(message.chat.id, 'Максимум заданий в квесте: ' + max_taskid[0])
+                if int(current_task_id[0][0]) == int(max_taskid[0]):
                     bot.send_message(message.chat.id, 'Зашли в IF')
                     textcursor.execute('UPDATE quest_progress SET isdoing=TRUE WHERE user_id=%s AND quest_id=%s',(int(message.chat.id),current_task_id[0][1],))
                     bdconnect.commit()
@@ -149,9 +149,9 @@ def some_text_reaction(message):
                 else:
                     bot.send_message(message.chat.id, 'Зашли в ELSE')
                     textcursor.execute('SELECT task_id,task_text,task_title FROM tasks WHERE task_quest=%s AND task_id=%s ORDER BY task_id',
-                                    (current_task_id[0][1],current_task_id[0][0]+1,))
+                                        (current_task_id[0][1],current_task_id[0][0]+1,))
                     textcursor.execute('UPDATE quest_progress SET current_task=%s WHERE quest_id=%s AND user_id=%s',
-                                       (current_task_id[0][0] + 1, current_task_id[0][1], int(message.chat.id),))
+                                           (current_task_id[0][0] + 1, current_task_id[0][1], int(message.chat.id),))
                     bdconnect.commit()
                     next_task = textcursor.fetchall()
                     bot.send_message(message.chat.id, next_task[0][1])
