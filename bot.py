@@ -83,9 +83,9 @@ def answer(message):
 @bot.message_handler(commands=['stats'])
 def answer(message):
     curs = bdconnect.cursor()
-    curs.execute('WITH vse AS (SELECT * FROM quest_progress JOIN quests ON (quest_progress.quest_id=quests.quest_id)), nado AS (SELECT quest_exp FROM vse WHERE user_id=%s) SELECT sum(quest_exp) FROM nado', (int(message.chat.id),))
+    curs.execute('WITH vse AS (SELECT * FROM quest_progress JOIN quests ON (quest_progress.quest_id=quests.quest_id)), nado AS (SELECT quest_exp,quest_money FROM vse WHERE user_id=%s) SELECT sum(quest_exp),sum(quest_money) FROM nado', (int(message.chat.id),))
     exp = curs.fetchall()
-    bot.send_message(message.chat.id, exp[0])
+    bot.send_message(message.chat.id, 'Количество опыта: {0}\nКоличество монет: {1}'.format(exp[0][0],exp[0][1]))
 
 @bot.message_handler(commands=['takequest'])
 def takequest(message):
