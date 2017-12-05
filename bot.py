@@ -115,11 +115,11 @@ def some_text_reaction(message):
             bot.send_message(message.chat.id, 'Такого квеста не существует! Введите номер квеста из спика команды /list')
         else:
             bot.send_message(message.chat.id, 'Вошли в ELSE')
-            textcursor.execute('SELECT isdoing FROM quest_progress WHERE quest_id=%s AND user_id=%',
+            textcursor.execute('SELECT isdoing FROM quest_progress WHERE quest_id=%s AND user_id=%s',
                                (int(message.text), int(message.chat.id),))
             is_already_done = textcursor.fetchall()
             bot.send_message(message.chat.id, 'Вошли в ELSE')
-            if is_already_done:
+            if not is_already_done:
                 textcursor.execute('INSERT INTO quest_progress (quest_id,user_id,isdoing,current_task) VALUES (%s,%s,FALSE,1)',
                                    (int(message.text),int(message.chat.id),))
                 textcursor.execute('INSERT INTO task_progress (task_id,user_id,isdoing,quest_id) VALUES (1,%s,FALSE,%s)',
