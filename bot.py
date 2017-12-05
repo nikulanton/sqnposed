@@ -141,7 +141,7 @@ def some_text_reaction(message):
                 max_taskid = textcursor.fetchall()
                 maxid = max_taskid[0]
                 bot.send_message(message.chat.id, 'Почти у Else')
-                if current_task_id[0][0]==maxid:
+                if current_task_id[0][0]+1==maxid:
                     bot.send_message(message.chat.id, 'Зашли в IF')
                     textcursor.execute('UPDATE quest_progress SET isdoing=TRUE WHERE user_id=%s AND quest_id=%s',(int(message.chat.id),current_task_id[0][1],))
                     bdconnect.commit()
