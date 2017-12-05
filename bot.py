@@ -54,7 +54,7 @@ def list_of_quests(message):
     quests = curs.fetchall()
     allquests = "Список доступных квестов:\n"
     for quest in quests:
-        allquests = allquests + 'Квест номер {0} - {1} (Опыт: {2}, Монеты: {3}\n'.format(quest[0],quest[1],quest[2],quest[3])
+        allquests = allquests + 'Квест номер {0} - {1} (Опыт: {2}, Монеты: {3})\n'.format(quest[0],quest[1],quest[2],quest[3])
     bdconnect.commit()
     bot.send_message(message.chat.id, allquests)
 
@@ -125,7 +125,7 @@ def some_text_reaction(message):
     elif usermode[0][0] == "addtask":
         task_parts = (message.text).split(';')
         textcursor.execute(
-            'INSERT INTO quests (task_id,task_quest,task_title,task_text,task_location,task_numofexe,task_answer) VALUES (%s,%s,%s,%s,%s,%s,%s)',
+            'INSERT INTO tasks (task_id,task_quest,task_title,task_text,task_location,task_numofexe,task_answer) VALUES (%s,%s,%s,%s,%s,%s,%s)',
             (int(task_parts[0]),int(task_parts[1]),task_parts[2],task_parts[3],int(task_parts[4]),int(task_parts[5]),task_parts[6],))
         bdconnect.commit()
         bot.send_message(message.chat.id, 'Задание добавлено если вы нигде не ошиблись')
