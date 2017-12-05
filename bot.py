@@ -137,7 +137,7 @@ def some_text_reaction(message):
         task_parts = (message.text).split(';')
         textcursor.execute(
             'INSERT INTO tasks (task_id,task_quest,task_title,task_text,task_answer) VALUES (%s,%s,%s,%s,%s)',
-            (int(task_parts[0]),int(task_parts[1]),task_parts[2],task_parts[3],task_parts[6],))
+            (int(task_parts[0]),int(task_parts[1]),task_parts[2],task_parts[3],task_parts[4],))
         bdconnect.commit()
         bot.send_message(message.chat.id, 'Задание добавлено если вы нигде не ошиблись')
     elif usermode[0][0] == 'takequest':
