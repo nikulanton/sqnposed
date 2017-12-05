@@ -143,8 +143,6 @@ def some_text_reaction(message):
                 textcursor.execute('SELECT current_task FROM quest_progress WHERE user_id=%s AND isdoing=FALSE',
                     (int(message.chat.id),))
                 nowtask = textcursor.fetchall()
-                bot.send_message(message.chat.id, nowtask[0])
-                bot.send_message(message.chat.id, maxid)
                 if nowtask[0]==maxid:
                     textcursor.execute('UPDATE quest_progress SET isdoing=TRUE WHERE user_id=%s AND quest_id=%s',(int(message.chat.id),current_task_id[0][1],))
                     bdconnect.commit()
@@ -159,7 +157,6 @@ def some_text_reaction(message):
                                         (current_task_id[0][1],current_task_id[0][0]+1,))
                     next_task = textcursor.fetchall()
                     bot.send_message(message.chat.id, next_task[0][1])
-                bot.send_message(message.chat.id, 'Обошли IF ELSE')
             else:
                 bot.send_message(message.chat.id, 'Ответ не верный! Попробуйте другой!')
     else:
