@@ -43,18 +43,18 @@ def user_register(message):
         # Если нет, добавляем в базу
         userrole = 'user'
         curs.execute('INSERT INTO users (user_id,nickname,team,role,usermode) VALUES (%s,%s,NULL,%s,NULL);',
-                     (message.chat.id, message.from_user.username, userrole))
+                     (message.chat.id, message.from_user.username, str(userrole)))
         bdconnect.commit()
         bot.send_message(message.chat.id, 'Вы успешно зарегистрированы')
 
 @bot.message_handler(commands=['list'])
 def list_of_quests(message):
     curs = bdconnect.cursor()
-    curs.execute('SELECT quest_title FROM quests;')
+    curs.execute('SELECT quest_id,quest_title,quest_exp,quest_money FROM quests;')
     quests = curs.fetchall()
     allquests = "Список доступных квестов:\n"
     for quest in quests:
-        allquests = allquests + str(quest[0]) + '\n'
+        allquests = allquests + 'Квест номер {0} - {1} (Опыт: {2}, Монеты: {3}'.format(quest[0],quest[1],quest[2],quest[3])
     bdconnect.commit()
     bot.send_message(message.chat.id, allquests)
 
@@ -121,11 +121,9 @@ def some_text_reaction(message):
         if not quests:
             bot.send_message(message.chat.id, 'Такого квеста не существует! Введите номер квеста из спика команды /list')
         else:
-            bot.send_message(message.chat.id, 'Вошли в ELSE')
             textcursor.execute('SELECT isdoing FROM quest_progress WHERE quest_id=%s AND user_id=%s',
                                (int(message.text), int(message.chat.id),))
             is_already_done = textcursor.fetchall()
-            bot.send_message(message.chat.id, 'Вошли в ELSE')
             if not is_already_done:
                 textcursor.execute('INSERT INTO quest_progress (quest_id,user_id,isdoing,current_task) VALUES (%s,%s,FALSE,1)',
                                    (int(message.text),int(message.chat.id),))
