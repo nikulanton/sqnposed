@@ -54,7 +54,7 @@ def list_of_quests(message):
     quests = curs.fetchall()
     allquests = "Список доступных квестов:\n"
     for quest in quests:
-        allquests = allquests + 'Квест номер {0} - {1} (Опыт: {2}, Монеты: {3}'.format(quest[0],quest[1],quest[2],quest[3])
+        allquests = allquests + 'Квест номер {0} - {1} (Опыт: {2}, Монеты: {3}\n'.format(quest[0],quest[1],quest[2],quest[3])
     bdconnect.commit()
     bot.send_message(message.chat.id, allquests)
 
@@ -65,6 +65,14 @@ def addquest(message):
     curs.execute('UPDATE users set usermode=%s WHERE user_id = %s;', (status,int(message.chat.id),))
     bdconnect.commit()
     bot.send_message(message.chat.id, 'Введите данные о квесте в формате название;количество опыта;количество денег;дата начала;дата окончания\n*Дата вводится в формате месяц/день/год')
+
+@bot.message_handler(commands=['addtask'])
+def addtask(message):
+    curs = bdconnect.cursor()
+    status = 'addtask'
+    curs.execute('UPDATE users set usermode=%s WHERE user_id = %s;', (status,int(message.chat.id),))
+    bdconnect.commit()
+    bot.send_message(message.chat.id, 'Введите данные о задании в формате порядковый номер задания в квесте;номер квеста;заголовок задания;id локации;количество выполнений;правильный ответ')
 
 @bot.message_handler(commands=['esc'])
 def escape(message):
@@ -81,7 +89,7 @@ def answer(message):
     bot.send_message(message.chat.id, 'Введите найденный  код')
 
 @bot.message_handler(commands=['stats'])
-def answer(message):
+def stats(message):
     curs = bdconnect.cursor()
     curs.execute('WITH vse AS (SELECT * FROM quest_progress JOIN quests ON (quest_progress.quest_id=quests.quest_id)), nado AS (SELECT quest_exp,quest_money FROM vse WHERE user_id=%s) SELECT sum(quest_exp),sum(quest_money) FROM nado', (int(message.chat.id),))
     exp = curs.fetchall()
@@ -114,6 +122,13 @@ def some_text_reaction(message):
         textcursor.execute('INSERT INTO quests (quest_title,quest_exp,quest_money,quest_start,quest_end,quest_available) VALUES (%s,%s,%s,%s,%s,TRUE)', (quest_parts[0], int(quest_parts[1]), int(quest_parts[2]), quest_parts[3], quest_parts[4], ))
         bdconnect.commit()
         bot.send_message(message.chat.id, 'Квест добавлен если вы нигде не ошиблись')
+    elif usermode[0][0] == "addtask":
+        task_parts = (message.text).split(';')
+        textcursor.execute(
+            'INSERT INTO quests (quest_title,quest_exp,quest_money,quest_start,quest_end,quest_available) VALUES (%s,%s,%s,%s,%s,%s,%s)',
+            (int(task_parts[0]),int(task_parts[1]),task_parts[2],task_parts[3],int(task_parts[4]),int(task_parts[5]),task_parts[6],))
+        bdconnect.commit()
+        bot.send_message(message.chat.id, 'Задание добавлено если вы нигде не ошиблись')
     elif usermode[0][0] == 'takequest':
         textcursor.execute('SELECT quest_id FROM quests WHERE quest_id=%s', (int(message.text),))
         quests = textcursor.fetchall()
