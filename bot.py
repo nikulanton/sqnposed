@@ -52,7 +52,7 @@ def list_of_quests(message):
     curs = bdconnect.cursor()
     curs.execute('SELECT quest_title FROM quests;')
     quests = curs.fetchall()
-    allquests = "Список доступных квестов:\n"
+    allquests = "*Список доступных квестов:*\n"
     for quest in quests:
         allquests = allquests + str(quest[0]) + '\n'
     bdconnect.commit()
