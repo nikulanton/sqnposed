@@ -83,7 +83,6 @@ def done_quests(message):
         result='Вы уже выполнили следующие квесты:\n'
         for each in done:
             result = result + 'Квест номер {0} - {1}\n'.format(each[0],each[1])
-        bot.send_message(message.chat.id,'TEST')
         bot.send_message(message.chat.id, result)
 
 @bot.message_handler(commands=['addtask'])
