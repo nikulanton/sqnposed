@@ -80,10 +80,11 @@ def done_quests(message):
     if not done:
         bot.send_message(message.chat.id, 'Вы еще не выполняли квестов. Самое время начать')
     else:
+        result='Вы уже выполнили следующие квесты:\n'
         for each in done:
             result = result + 'Квест номер {0} - {1}\n'.format(each[0],each[1])
         bot.send_message(message.chat.id,'TEST')
-        bot.send_message(message.chat.id, 'Вы уже выполнили следующие квесты:\n{0}'.format(result))
+        bot.send_message(message.chat.id, result)
 
 @bot.message_handler(commands=['addtask'])
 def addtask(message):
