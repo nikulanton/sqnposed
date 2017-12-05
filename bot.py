@@ -61,18 +61,28 @@ def list_of_quests(message):
 @bot.message_handler(commands=['addquest'])
 def addquest(message):
     curs = bdconnect.cursor()
-    status = 'addquest'
-    curs.execute('UPDATE users set usermode=%s WHERE user_id = %s;', (status,int(message.chat.id),))
-    bdconnect.commit()
-    bot.send_message(message.chat.id, 'Введите данные о квесте в формате название;количество опыта;количество денег;дата начала;дата окончания\n*Дата вводится в формате месяц/день/год')
+    curs.execute('SELECT role FROM users WHERE user_id=%s', (int(message.chat.id),))
+    role = curs.fetchall()
+    if role[0]=='admin':
+        status = 'addquest'
+        curs.execute('UPDATE users set usermode=%s WHERE user_id = %s;', (status,int(message.chat.id),))
+        bdconnect.commit()
+        bot.send_message(message.chat.id, 'Введите данные о квесте в формате название;количество опыта;количество денег;дата начала;дата окончания\n*Дата вводится в формате месяц/день/год')
+    else:
+        bot.send_message(message.chat.id, 'Вы не являетесь администратором')
 
 @bot.message_handler(commands=['addtask'])
 def addtask(message):
     curs = bdconnect.cursor()
-    status = 'addtask'
-    curs.execute('UPDATE users set usermode=%s WHERE user_id = %s;', (status,int(message.chat.id),))
-    bdconnect.commit()
-    bot.send_message(message.chat.id, 'Введите данные о задании в формате порядковый номер задания в квесте;номер квеста;заголовок задания;текст задания;id локации;количество выполнений;правильный ответ')
+    curs.execute('SELECT role FROM users WHERE user_id=%s', (int(message.chat.id),))
+    role = curs.fetchall()
+    if role[0]=='admin':
+        status = 'addtask'
+        curs.execute('UPDATE users set usermode=%s WHERE user_id = %s;', (status,int(message.chat.id),))
+        bdconnect.commit()
+        bot.send_message(message.chat.id, 'Введите данные о задании в формате порядковый номер задания в квесте;номер квеста;заголовок задания;текст задания;id локации;количество выполнений;правильный ответ')
+    else:
+        bot.send_message(message.chat.id,'Вы не являетесь администратором')
 
 @bot.message_handler(commands=['esc'])
 def escape(message):
@@ -175,7 +185,7 @@ def some_text_reaction(message):
                 if nowtask[0]==maxid:
                     textcursor.execute('UPDATE quest_progress SET isdoing=TRUE WHERE user_id=%s AND quest_id=%s',(int(message.chat.id),current_task_id[0][1],))
                     bdconnect.commit()
-                    bot.send_message(message.chat.id, 'Квест выполнен! Поздраляем!')
+                    bot.send_message(message.chat.id, 'УПС! Заданий-то больше нет. Квест выполнен! Поздравляем!')
                 else:
                     textcursor.execute('UPDATE quest_progress SET current_task=%s WHERE quest_id=%s AND user_id=%s',
                                            (current_task_id[0][0]+1, current_task_id[0][1], int(message.chat.id),))
