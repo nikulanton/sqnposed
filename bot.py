@@ -111,23 +111,25 @@ def some_text_reaction(message):
         textcursor.execute('SELECT quest_id FROM quests WHERE quest_id=%s', (int(message.text),))
         quests = textcursor.fetchall()
         bdconnect.commit()
-        textcursor.execute('SELECT isdoing FROM quest_progress WHERE quest_id=%s AND user_id=%', (int(message.text),int(message.chat.id),))
-        is_already_done = textcursor.fetchall()
-        bdconnect.commit()
-        bot.send_message(message.chat.id, 'test')
         if not quests:
             bot.send_message(message.chat.id, 'Такого квеста не существует! Введите номер квеста из спика команды /list')
         else:
-            textcursor.execute('INSERT INTO quest_progress (quest_id,user_id,isdoing,current_task) VALUES (%s,%s,FALSE,1)',
-                               (int(message.text),int(message.chat.id),))
-            textcursor.execute('INSERT INTO task_progress (task_id,user_id,isdoing,quest_id) VALUES (1,%s,FALSE,%s)',
-                                (int(message.chat.id), int(message.text), ))
-            textcursor.execute('UPDATE users set usermode=NULL WHERE user_id = %s;', (int(message.chat.id),))
-            bdconnect.commit()
-            textcursor.execute('SELECT task_id,task_text,task_title FROM tasks WHERE task_quest=%s ORDER BY task_id', (int(message.text),))
-            first_task = textcursor.fetchall()
-            bot.send_message(message.chat.id, 'Вы успешно взяли квест. Отправляем первое задание...')
-            bot.send_message(message.chat.id, first_task[0][1])
+            textcursor.execute('SELECT isdoing FROM quest_progress WHERE quest_id=%s AND user_id=%',
+                               (int(message.text), int(message.chat.id),))
+            is_already_done = textcursor.fetchall()
+            if is_already_done:
+                textcursor.execute('INSERT INTO quest_progress (quest_id,user_id,isdoing,current_task) VALUES (%s,%s,FALSE,1)',
+                                   (int(message.text),int(message.chat.id),))
+                textcursor.execute('INSERT INTO task_progress (task_id,user_id,isdoing,quest_id) VALUES (1,%s,FALSE,%s)',
+                                    (int(message.chat.id), int(message.text), ))
+                textcursor.execute('UPDATE users set usermode=NULL WHERE user_id = %s;', (int(message.chat.id),))
+                bdconnect.commit()
+                textcursor.execute('SELECT task_id,task_text,task_title FROM tasks WHERE task_quest=%s ORDER BY task_id', (int(message.text),))
+                first_task = textcursor.fetchall()
+                bot.send_message(message.chat.id, 'Вы успешно взяли квест. Отправляем первое задание...')
+                bot.send_message(message.chat.id, first_task[0][1])
+            else:
+                bot.send_message(message.chat.id, 'test')
     elif usermode[0][0] == 'tellinganswer':
         textcursor.execute('SELECT current_task,quest_id FROM quest_progress WHERE user_id=%s AND isdoing=FALSE', (int(message.chat.id),))
         current_task_id = textcursor.fetchall()
