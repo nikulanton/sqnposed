@@ -81,7 +81,7 @@ def done_quests(message):
         bot.send_message(message.chat.id, 'Вы еще не выполняли квестов. Самое время начать')
     else:
         for quest in done:
-            result = result + 'Квест номер {0} - {1}\n'.format(done[0],done[1])
+            result = result + 'Квест номер {0} - {1}\n'.format(quest[0],quest[1])
         bot.send_message(message.chat.id, 'Вы уже выполнили следующие квесты:\n{0}'.format(result))
 
 @bot.message_handler(commands=['addtask'])
