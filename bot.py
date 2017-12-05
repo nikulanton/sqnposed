@@ -139,8 +139,9 @@ def some_text_reaction(message):
                 bot.send_message(message.chat.id, 'Задание успешно выполнено, поздравляем! Отправляем следующее...')
                 textcursor.execute('SELECT max(task_id) FROM tasks WHERE task_quest=%s', (current_task_id[0][1],))
                 max_taskid = textcursor.fetchall()
+                maxid = max_taskid[0]
                 bot.send_message(message.chat.id, 'Почти у Else')
-                if current_task_id[0][0]==4:
+                if current_task_id[0][0]==maxid:
                     bot.send_message(message.chat.id, 'Зашли в IF')
                     textcursor.execute('UPDATE quest_progress SET isdoing=TRUE WHERE user_id=%s AND quest_id=%s',(int(message.chat.id),current_task_id[0][1],))
                     bdconnect.commit()
