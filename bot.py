@@ -114,7 +114,7 @@ def some_text_reaction(message):
         is_already_done = textcursor.fetchall()
         if not quests:
             bot.send_message(message.chat.id, 'Такого квеста не существует! Введите номер квеста из спика команды /list')
-        elif is_already_done[0]==True:
+        elif is_already_done[0]:
             bot.send_message(message.chat.id, 'Вы уже выполняли этот квест. Выберите другой')
         else:
             textcursor.execute('INSERT INTO quest_progress (quest_id,user_id,isdoing,current_task) VALUES (%s,%s,FALSE,1)',
