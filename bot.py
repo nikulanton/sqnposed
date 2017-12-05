@@ -154,6 +154,8 @@ def some_text_reaction(message):
                                            (current_task_id[0][0]+1, current_task_id[0][1], int(message.chat.id),))
                     textcursor.execute('SELECT task_id,task_text,task_title FROM tasks WHERE task_quest=%s AND task_id=%s ORDER BY task_id',
                                         (current_task_id[0][1],current_task_id[0][0]+1,))
+                    textcursor.execute('INSERT INTO task_progress (task_id,user_id,isdoing,quest_id) VALUES (%s,%s,FALSE,%s)',
+                                        (current_task_id[0][0]+1, int(message.chat.id), current_task_id[0][1],))
                     bdconnect.commit()
                     next_task = textcursor.fetchall()
                     bot.send_message(message.chat.id, next_task[0][1])
