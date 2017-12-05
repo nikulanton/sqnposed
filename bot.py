@@ -50,9 +50,11 @@ def user_register(message):
 @bot.message_handler(commands=['list'])
 def list_of_quests(message):
     curs = bdconnect.cursor()
+    #Выбираем все доступные квесты
     curs.execute('SELECT quest_id,quest_title,quest_exp,quest_money,quest_location,loc_title FROM quests JOIN locations ON (quest_location=loc_id);')
     quests = curs.fetchall()
     allquests = "Список доступных квестов:\n"
+    #Формируем строку и отправляем игроку
     for quest in quests:
         allquests = allquests + 'Квест номер {0} - {1}\nОпыт: {2}, Монеты: {3}\nЛокация: {4}\n'.format(quest[0],quest[1],quest[2],quest[3],quest[5])
     bdconnect.commit()
@@ -61,10 +63,12 @@ def list_of_quests(message):
 @bot.message_handler(commands=['addquest'])
 def addquest(message):
     curs = bdconnect.cursor()
+    #Проверяем имеет ли пользователь права на использование команды
     curs.execute('SELECT role FROM users WHERE user_id=%s', (int(message.chat.id),))
     role = curs.fetchall()
     if role[0][0]=='admin':
         status = 'addquest'
+        #Если имеет, то переводим в режим добавления нового квеста
         curs.execute('UPDATE users set usermode=%s WHERE user_id = %s;', (status,int(message.chat.id),))
         bdconnect.commit()
         bot.send_message(message.chat.id, 'Введите данные о квесте в формате название квеста;количество опыта;количество денег;ID локации')
@@ -74,12 +78,15 @@ def addquest(message):
 @bot.message_handler(commands=['done'])
 def done_quests(message):
     curs = bdconnect.cursor()
+    #Смотрим какие квесты выполнял пользователь
     curs.execute('WITH first as (SELECT quest_progress.quest_id, quest_title, user_id FROM quest_progress JOIN quests ON (quests.quest_id=quest_progress.quest_id)), second as (SELECT * FROM first WHERE user_id=%s) SELECT * FROM second',
                  (int(message.chat.id),))
     done = curs.fetchall()
     if not done:
+        #Если пользователь еще не выполнял квестов выводим сообщение
         bot.send_message(message.chat.id, 'Вы еще не выполняли квестов. Самое время начать')
     else:
+        #Если же выполнял, выводим ID и название
         result='Вы уже выполнили следующие квесты:\n'
         for each in done:
             result = result + 'Квест номер {0} - {1}\n'.format(each[0],each[1])
@@ -88,6 +95,7 @@ def done_quests(message):
 @bot.message_handler(commands=['addtask'])
 def addtask(message):
     curs = bdconnect.cursor()
+    #опять проверка прав, тут все так же как в квестах
     curs.execute('SELECT role FROM users WHERE user_id=%s', (int(message.chat.id),))
     role = curs.fetchall()
     if role[0][0]=='admin':
@@ -101,6 +109,7 @@ def addtask(message):
 @bot.message_handler(commands=['esc'])
 def escape(message):
     curs = bdconnect.cursor()
+    #Снимаем у игрока режим выполнения какой либо команды
     curs.execute('UPDATE users set usermode=NULL WHERE user_id = %s;', (int(message.chat.id),))
     bdconnect.commit()
     bot.send_message(message.chat.id, 'Предыдущая команда прервана. Выберите другую')
@@ -108,6 +117,7 @@ def escape(message):
 @bot.message_handler(commands=['answer'])
 def answer(message):
     curs = bdconnect.cursor()
+    #Переводим в режим ответа на задание
     status = 'tellinganswer'
     curs.execute('UPDATE users set usermode=%s WHERE user_id = %s;', (status, int(message.chat.id),))
     bot.send_message(message.chat.id, 'Введите найденный  код')
@@ -115,6 +125,7 @@ def answer(message):
 @bot.message_handler(commands=['stats'])
 def stats(message):
     curs = bdconnect.cursor()
+    #Соединяем таблицы квестов, локаций и прогресса чтобы посчитать суммарное количество опыта и монет
     curs.execute('WITH vse AS (SELECT * FROM quest_progress JOIN quests ON (quest_progress.quest_id=quests.quest_id)), nado AS (SELECT user_id,quest_exp,quest_money,locations.loc_exp,isdoing FROM vse JOIN locations ON (quest_location=loc_id)) SELECT sum(quest_exp),sum(quest_money),sum(loc_exp) FROM nado WHERE user_id=%s AND isdoing=TRUE', (int(message.chat.id),))
     exp = curs.fetchall()
     bot.send_message(message.chat.id, 'Количество опыта: {0}\nКоличество монет: {1}'.format(exp[0][0]+exp[0][2],exp[0][1]))
