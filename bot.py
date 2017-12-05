@@ -81,7 +81,7 @@ def done_quests(message):
         bot.send_message(message.chat.id, 'Вы еще не выполняли квестов. Самое время начать')
     else:
         for each in done:
-            result = each + 'Квест номер {0} - {1}\n'.format(each[0],each[1])
+            result = result + 'Квест номер {0} - {1}\n'.format(each[0],each[1])
         bot.send_message(message.chat.id,'TEST')
         bot.send_message(message.chat.id, 'Вы уже выполнили следующие квесты:\n{0}'.format(result))
 
@@ -174,7 +174,7 @@ def some_text_reaction(message):
                 textcursor.execute('SELECT task_id,task_text,task_title FROM tasks WHERE task_quest=%s ORDER BY task_id', (int(message.text),))
                 first_task = textcursor.fetchall()
                 bot.send_message(message.chat.id, 'Вы успешно взяли квест. Отправляем первое задание...')
-                bot.send_message(message.chat.id, '{0}\n{1}'.format(first_task[0][0],first_task[0][1]))
+                bot.send_message(message.chat.id, '{0}\n{1}'.format(first_task[0][2],first_task[0][1]))
             else:
                 bot.send_message(message.chat.id, 'Вы уже выполняли этот квест, выберите другой!')
     elif usermode[0][0] == 'tellinganswer':
@@ -210,7 +210,7 @@ def some_text_reaction(message):
                     textcursor.execute('SELECT task_id,task_text,task_title FROM tasks WHERE task_quest=%s AND task_id=%s ORDER BY task_id',
                                         (current_task_id[0][1],current_task_id[0][0]+1,))
                     next_task = textcursor.fetchall()
-                    bot.send_message(message.chat.id, '{0}\n{1}'.format(next_task[0][0],next_task[0][1]))
+                    bot.send_message(message.chat.id, '{0}\n{1}'.format(next_task[0][2],next_task[0][1]))
             else:
                 bot.send_message(message.chat.id, 'Ответ не верный! Попробуйте другой!')
     else:
