@@ -50,11 +50,11 @@ def user_register(message):
 @bot.message_handler(commands=['list'])
 def list_of_quests(message):
     curs = bdconnect.cursor()
-    curs.execute('SELECT quest_id,quest_title,quest_exp,quest_money FROM quests;')
+    curs.execute('SELECT quest_id,quest_title,quest_exp,quest_money,quest_location,loc_title FROM quests JOIN locations ON (quest_location=loc_id);')
     quests = curs.fetchall()
     allquests = "Список доступных квестов:\n"
     for quest in quests:
-        allquests = allquests + 'Квест номер {0} - {1} (Опыт: {2}, Монеты: {3})\n'.format(quest[0],quest[1],quest[2],quest[3])
+        allquests = allquests + 'Квест номер {0} - {1}\nОпыт: {2}, Монеты: {3}\nЛокация: {4}'.format(quest[0],quest[1],quest[2],quest[3],quest[5])
     bdconnect.commit()
     bot.send_message(message.chat.id, allquests)
 
