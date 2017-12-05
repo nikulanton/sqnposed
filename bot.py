@@ -63,7 +63,7 @@ def addquest(message):
     curs = bdconnect.cursor()
     curs.execute('SELECT role FROM users WHERE user_id=%s', (int(message.chat.id),))
     role = curs.fetchall()
-    if role[0]=='admin':
+    if role[0][0]=='admin':
         status = 'addquest'
         curs.execute('UPDATE users set usermode=%s WHERE user_id = %s;', (status,int(message.chat.id),))
         bdconnect.commit()
@@ -76,7 +76,7 @@ def addtask(message):
     curs = bdconnect.cursor()
     curs.execute('SELECT role FROM users WHERE user_id=%s', (int(message.chat.id),))
     role = curs.fetchall()
-    if role[0]=='admin':
+    if role[0][0]=='admin':
         status = 'addtask'
         curs.execute('UPDATE users set usermode=%s WHERE user_id = %s;', (status,int(message.chat.id),))
         bdconnect.commit()
