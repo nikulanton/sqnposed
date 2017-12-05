@@ -52,7 +52,7 @@ def list_of_quests(message):
     curs = bdconnect.cursor()
     curs.execute('SELECT quest_title FROM quests;')
     quests = curs.fetchall()
-    allquests = "*Список доступных квестов:*\n"
+    allquests = "Список доступных квестов:\n"
     for quest in quests:
         allquests = allquests + str(quest[0]) + '\n'
     bdconnect.commit()
@@ -146,11 +146,14 @@ def some_text_reaction(message):
                 tested1 = tested+1
                 textcursor.execute('UPDATE quest_progress SET current_task=%s WHERE quest_id=%s AND user_id=%s',
                                    (int(tested1),current_task_id[0][1],int(message.chat.id),))
+                # textcursor.execute('INSERT INTO task_progress (task_id,user_id,isdoing,quest_id) VALUES (test)')
                 textcursor.execute('SELECT task_id,task_text,task_title FROM tasks WHERE task_quest=%s AND task_id=%s ORDER BY task_id',
                     (current_task_id[0][1],int(tested1),))
                 bdconnect.commit()
                 next_task = textcursor.fetchall()
                 bot.send_message(message.chat.id, next_task[0][1])
+        elif not istrueanswer:
+            bot.send_message(message.chat.id, 'Задания закончились(')
         else:
             bot.send_message(message.chat.id, 'Ответ не верный! Попробуйте другой!')
     else:
