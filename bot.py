@@ -129,7 +129,7 @@ def some_text_reaction(message):
         textcursor.execute('SELECT task_answer FROM tasks WHERE task_id=%s AND task_quest=%s',
                      (current_task_id[0][0], current_task_id[0][1],))
         istrueanswer = textcursor.fetchall()
-        if istrueanswer[0][0] == message.text:
+        if istrueanswer[0] == message.text:
             bot.send_message(message.chat.id,current_task_id[0][0]+current_task_id[0][1])
             textcursor.execute('UPDATE task_progress SET isdoing=TRUE WHERE task_id=%s AND user_id=%s AND quest_id=%s',
                          (int(current_task_id[0][0]),int(message.chat.id), int(current_task_id[0][1]),))
