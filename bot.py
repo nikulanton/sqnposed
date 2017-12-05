@@ -110,8 +110,10 @@ def some_text_reaction(message):
     elif usermode[0][0] == 'takequest':
         textcursor.execute('SELECT quest_id FROM quests WHERE quest_id=%s', (int(message.text),))
         quests = textcursor.fetchall()
-        # textcursor.execute('SELECT isdoing FROM quest_progress WHERE quest_id=%s AND user_id=%', (int(message.text),int(message.chat.id),))
-        # is_already_done = textcursor.fetchall()
+        bdconnect.commit()
+        textcursor.execute('SELECT isdoing FROM quest_progress WHERE quest_id=%s AND user_id=%', (int(message.text),int(message.chat.id),))
+        is_already_done = textcursor.fetchall()
+        bdconnect.commit()
         if not quests:
             bot.send_message(message.chat.id, 'Такого квеста не существует! Введите номер квеста из спика команды /list')
         else:
